@@ -39,19 +39,19 @@ run-host: build-host
 deploy-host: build-host
     Scripts/deploy-host.sh "{{derived_data}}/Build/Products/Debug/PadBridge Host.app"
 
-# iPad アプリを実機向けにビルドする
-build-pad: generate
-    xcodebuild -project PadBridge.xcodeproj -scheme PadBridge -configuration Debug -destination generic/platform=iOS -derivedDataPath {{derived_data}} -allowProvisioningUpdates PADBRIDGE_COMMIT={{commit}} build
+# iPad アプリを実機向けにビルドする。端末の ID を渡すと、その端末を宛先にする (宛先が generic のまま署名のプロファイルが作り直されると、そのとき Mac から見えていない iPad が対象から外れ、インストールできなくなる)
+build-pad device="": generate
+    xcodebuild -project PadBridge.xcodeproj -scheme PadBridge -configuration Debug -destination {{ if device == "" { "generic/platform=iOS" } else { "id=" + shell('Scripts/device-udid.sh "$1"', device) } }} -derivedDataPath {{derived_data}} -allowProvisioningUpdates PADBRIDGE_COMMIT={{commit}} build
 
 # iPad アプリをシミュレータ向けにビルドする (署名なし)
 build-pad-simulator: generate
     xcodebuild -project PadBridge.xcodeproj -scheme PadBridge -configuration Debug -destination "generic/platform=iOS Simulator" -derivedDataPath {{derived_data}} build
 
 # 接続中の実機に iPad アプリをインストールする (devicectl list devices で ID を確認する)
-install-pad device: build-pad
+install-pad device: (build-pad device)
     xcrun devicectl device install app --device {{device}} "{{derived_data}}/Build/Products/Debug-iphoneos/PadBridge.app"
 
 # iPad アプリを新しいビルドに更新する。インストールするとアプリが終了するので、iPad が Host に接続中の間はインストールしない
-deploy-pad device: build-pad
+deploy-pad device: (build-pad device)
     if Scripts/pad-connected.sh; then echo "iPad が接続中のため、インストールを中止しました" >&2; exit 1; fi
     xcrun devicectl device install app --device {{device}} "{{derived_data}}/Build/Products/Debug-iphoneos/PadBridge.app"
