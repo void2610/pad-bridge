@@ -152,7 +152,7 @@ just test-ios   # 同じテストを iOS シミュレータで実行 (iPad で�
 just test-tsan  # 同じテストを Thread Sanitizer 付きで実行 (複数のスレッドから使う部品のデータ競合を検出する)
 just check      # 上の 3 つのテストと、Host・iPad アプリのビルドをまとめて実行 (ビルドは毎回クリーンビルドし、コードの警告が 1 件でもあれば失敗)
 just deploy-host  # 起動中の Host を新しいビルドに更新する (Typeless が音声入力中のときと、iPad が接続中のときは更新しない)
-just deploy-pad <ID>  # iPad アプリを新しいビルドに更新する (インストールするとアプリが終了するので、iPad が Host に接続中の間はインストールしない)
+just deploy-pad <ID>  # iPad アプリを新しいビルドに更新する
 ```
 
 アプリのアイコンは `Scripts/AppIcon.swift` で描画しています。デザインを変えたら `just icon` で iPad と Mac のアセットカタログに書き出します。

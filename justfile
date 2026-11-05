@@ -51,7 +51,6 @@ build-pad-simulator: generate
 install-pad device: (build-pad device)
     xcrun devicectl device install app --device {{device}} "{{derived_data}}/Build/Products/Debug-iphoneos/PadBridge.app"
 
-# iPad アプリを新しいビルドに更新する。インストールするとアプリが終了するので、iPad が Host に接続中の間はインストールしない
+# iPad アプリを新しいビルドに更新する
 deploy-pad device: (build-pad device)
-    if Scripts/pad-connected.sh; then echo "iPad が接続中のため、インストールを中止しました" >&2; exit 1; fi
     xcrun devicectl device install app --device {{device}} "{{derived_data}}/Build/Products/Debug-iphoneos/PadBridge.app"
